@@ -1,0 +1,59 @@
+import { BrandProfile } from '../types.ts';
+
+export const DEFAULT_BRAND_PROFILE: BrandProfile = {
+  name: 'AURA STUDIO',
+  tagline: 'Minimalist Architecture, Spatial Design & Curated Objects',
+  location: 'SoHo, New York · Est. 2024',
+  monogram: 'AS',
+  links: [
+    {
+      id: 'instagram',
+      title: 'Instagram',
+      handleOrInfo: '@aurastudio.design',
+      subtitle: 'Daily visual journal, behind-the-scenes & design drops',
+      url: 'https://instagram.com/aurastudio.design',
+      actionLabel: 'Follow',
+    },
+    {
+      id: 'tiktok',
+      title: 'TikTok',
+      handleOrInfo: '@aurastudio',
+      subtitle: 'Short-form fabrication processes, studio tours & material studies',
+      url: 'https://tiktok.com/@aurastudio',
+      actionLabel: 'Watch',
+    },
+    {
+      id: 'website',
+      title: 'Official Website',
+      handleOrInfo: 'aurastudio.design',
+      subtitle: 'Flagship portfolio, project archives & monograph publication',
+      url: 'https://aurastudio.design',
+      actionLabel: 'Visit',
+    },
+    {
+      id: 'whatsapp',
+      title: 'WhatsApp Concierge',
+      handleOrInfo: '+1 (555) 382-9014',
+      subtitle: 'Direct messaging for client inquiries, consultations & VIP orders',
+      url: 'https://wa.me/15553829014?text=Hello%20Aura%20Studio%2C%20I%20would%20like%20to%20inquire%20about%20a%20project.',
+      actionLabel: 'Chat',
+    },
+    {
+      id: 'google_review',
+      title: 'Google Reviews',
+      handleOrInfo: '5.0 ★ · 140+ Client Ratings',
+      subtitle: 'Read authentic client testimonials or share your experience',
+      url: 'https://search.google.com/local/writereview?placeid=ChIJN1t_tDeuEmsRUsoyG83frY4',
+      actionLabel: 'Review',
+      isPrimaryHighlight: true,
+    },
+    {
+      id: 'email',
+      title: 'Email Inquiries',
+      handleOrInfo: 'hello@aurastudio.design',
+      subtitle: 'Press releases, architectural commissions & collaborations',
+      url: 'mailto:hello@aurastudio.design?subject=Inquiry%20regarding%20Aura%20Studio&body=Hello%20Aura%20Studio%20Team%2C%0A%0AI%20am%20reaching%20out%20regarding...',
+      actionLabel: 'Send',
+    },
+  ],
+};

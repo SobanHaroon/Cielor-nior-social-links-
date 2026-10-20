@@ -1,0 +1,6 @@
+{
+  "name": "Aura · Minimalist Social & Review Hub",
+  "description": "Modern minimalist brand social media links and review hub with QR code sharing, quick copy, and customizable styling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
