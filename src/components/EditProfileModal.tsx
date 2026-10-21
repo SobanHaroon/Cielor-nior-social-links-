@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
+  Copy,
 } from 'lucide-react';
 import { BrandProfile, SocialPlatformId } from '../types.ts';
 import { DEFAULT_BRAND_PROFILE } from '../data/defaultProfile.ts';
@@ -40,8 +41,30 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [passwordError, setPasswordError] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [syncCopied, setSyncCopied] = useState<boolean>(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCopySyncLink = () => {
+    try {
+      const b64 = btoa(encodeURIComponent(JSON.stringify(formData)));
+      const syncUrl = `https://cielornior.vercel.app/?cfg=${b64}`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(syncUrl);
+      } else {
+        const input = document.createElement('textarea');
+        input.value = syncUrl;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+      }
+      setSyncCopied(true);
+      setTimeout(() => setSyncCopied(false), 2500);
+    } catch (err) {
+      console.error('Failed to copy cross-device sync URL', err);
+    }
+  };
 
   const handleModalClose = () => {
     setIsUnlocked(false);
@@ -535,6 +558,26 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                       </div>
                     </div>
                   ))}
+                </div>
+
+                {/* Cross-Device Permanent Sync Card */}
+                <div className="p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-100/70 dark:bg-neutral-950/60 flex items-center justify-between gap-3 text-xs mt-3">
+                  <div className="min-w-0">
+                    <span className="font-semibold text-neutral-900 dark:text-neutral-100 block truncate">
+                      Cross-Device Sync Link
+                    </span>
+                    <span className="text-[11px] text-neutral-500 dark:text-neutral-400 block line-clamp-1">
+                      Open on any other phone or device to load & save these changes permanently.
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopySyncLink}
+                    className="px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 font-medium text-neutral-800 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shrink-0 flex items-center gap-1.5"
+                  >
+                    {syncCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{syncCopied ? 'Copied Link!' : 'Copy Sync Link'}</span>
+                  </button>
                 </div>
 
                 {/* Footer Buttons */}

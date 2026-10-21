@@ -1,0 +1,47 @@
+{
+  "entities": {
+    "BrandProfile": {
+      "title": "Brand Profile",
+      "description": "Global brand details and social media channels synchronized across all devices",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Brand title or wordmark",
+          "maxLength": 100
+        },
+        "tagline": {
+          "type": "string",
+          "description": "Brand bio or tagline",
+          "maxLength": 300
+        },
+        "location": {
+          "type": "string",
+          "description": "Location or studio details",
+          "maxLength": 150
+        },
+        "monogram": {
+          "type": "string",
+          "description": "Short monogram initials fallback",
+          "maxLength": 10
+        },
+        "logoUrl": {
+          "type": "string",
+          "description": "Data URL or image link for uploaded brand logo",
+          "maxLength": 500000
+        },
+        "links": {
+          "type": "array",
+          "description": "Ordered list of social media channels and contact options"
+        }
+      },
+      "required": ["name", "tagline", "monogram", "links"]
+    }
+  },
+  "firestore": {
+    "/brand_profiles/{profileId}": {
+      "schema": "BrandProfile",
+      "description": "Global public brand profile details synchronized across devices"
+    }
+  }
+}

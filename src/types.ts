@@ -1,6 +1,7 @@
 export type SocialPlatformId =
   | 'instagram'
   | 'tiktok'
+  | 'facebook'
   | 'website'
   | 'whatsapp'
   | 'google_review'

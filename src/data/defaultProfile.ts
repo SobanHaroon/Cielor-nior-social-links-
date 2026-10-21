@@ -23,6 +23,14 @@ export const DEFAULT_BRAND_PROFILE: BrandProfile = {
       actionLabel: 'Watch',
     },
     {
+      id: 'facebook',
+      title: 'Facebook',
+      handleOrInfo: 'facebook.com/aurastudio',
+      subtitle: 'Community updates, events, exhibitions & gallery drops',
+      url: 'https://facebook.com/aurastudio',
+      actionLabel: 'Follow',
+    },
+    {
       id: 'website',
       title: 'Official Website',
       handleOrInfo: 'cielornior.vercel.app',

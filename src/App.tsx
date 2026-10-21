@@ -21,6 +21,10 @@ import { DEFAULT_BRAND_PROFILE } from './data/defaultProfile.ts';
 import { SocialButton } from './components/SocialButton.tsx';
 import { QRCodeModal } from './components/QRCodeModal.tsx';
 import { EditProfileModal } from './components/EditProfileModal.tsx';
+import {
+  subscribeToBrandProfile,
+  saveBrandProfileToCloud,
+} from './lib/firebase.ts';
 
 export const DEPLOYED_SITE_URL = 'https://cielornior.vercel.app/';
 
@@ -32,14 +36,45 @@ export default function App() {
     return true; // default dark mode
   });
 
-  // Brand Profile State
+  // Brand Profile State with cross-device URL parameter sync & localStorage support
   const [brandProfile, setBrandProfile] = useState<BrandProfile>(() => {
+    // 1. First check if a shared cross-device sync config is in the URL hash or query
+    try {
+      const searchParams = new URLSearchParams(window.location.search);
+      const urlConfigParam = searchParams.get('cfg') || (window.location.hash.startsWith('#cfg=') ? window.location.hash.slice(5) : null);
+      if (urlConfigParam) {
+        const decoded = JSON.parse(decodeURIComponent(atob(urlConfigParam)));
+        if (decoded && decoded.name && Array.isArray(decoded.links)) {
+          localStorage.setItem('aura_brand_profile', JSON.stringify(decoded));
+          // Clean URL without reload
+          window.history.replaceState(null, '', window.location.pathname);
+          return decoded;
+        }
+      }
+    } catch (e) {
+      console.warn('Could not decode URL configuration', e);
+    }
+
+    // 2. Otherwise load from local storage
     try {
       const saved = localStorage.getItem('aura_brand_profile');
       if (saved) {
         const parsed: BrandProfile = JSON.parse(saved);
-        // Ensure website link points to the deployed site if previously saved with old default
         if (parsed.links) {
+          // Ensure facebook link exists
+          const hasFacebook = parsed.links.some((l) => l.id === 'facebook');
+          if (!hasFacebook) {
+            const defaultFb = DEFAULT_BRAND_PROFILE.links.find((l) => l.id === 'facebook');
+            if (defaultFb) {
+              const tiktokIdx = parsed.links.findIndex((l) => l.id === 'tiktok');
+              if (tiktokIdx !== -1) {
+                parsed.links.splice(tiktokIdx + 1, 0, defaultFb);
+              } else {
+                parsed.links.push(defaultFb);
+              }
+            }
+          }
+          // Ensure website link points to the deployed site if previously saved with old default
           parsed.links = parsed.links.map((link) =>
             link.id === 'website' && (link.url === 'https://aurastudio.design' || !link.url)
               ? { ...link, url: DEPLOYED_SITE_URL, handleOrInfo: 'cielornior.vercel.app' }
@@ -82,6 +117,32 @@ export default function App() {
       localStorage.setItem('aura_theme_mode', 'light');
     }
   }, [isDarkMode]);
+
+  // Subscribe to real-time Firestore database updates across all devices
+  useEffect(() => {
+    const unsubscribe = subscribeToBrandProfile((cloudProfile) => {
+      if (cloudProfile && cloudProfile.name) {
+        setBrandProfile((prev) => {
+          // If cloud has different data, apply and cache it
+          if (JSON.stringify(prev) !== JSON.stringify(cloudProfile)) {
+            try {
+              localStorage.setItem('aura_brand_profile', JSON.stringify(cloudProfile));
+            } catch (e) {
+              console.warn('Could not cache cloud profile to localStorage', e);
+            }
+            return cloudProfile;
+          }
+          return prev;
+        });
+      }
+    });
+
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, []);
 
   // Show temporary toast message
   const triggerToast = (msg: string) => {
@@ -131,22 +192,35 @@ export default function App() {
     });
   };
 
-  // Save updated brand profile
-  const handleSaveProfile = (updated: BrandProfile) => {
+  // Save updated brand profile permanently to Firestore and localStorage
+  const handleSaveProfile = async (updated: BrandProfile) => {
     setBrandProfile(updated);
     try {
       localStorage.setItem('aura_brand_profile', JSON.stringify(updated));
     } catch (e) {
       console.error('Failed to save brand profile', e);
     }
-    triggerToast('Brand profile updated');
+    triggerToast('Syncing brand details permanently...');
+
+    try {
+      await saveBrandProfileToCloud(updated);
+      triggerToast('Synced permanently across all devices!');
+    } catch (cloudErr) {
+      console.warn('Cloud sync error:', cloudErr);
+      triggerToast('Saved locally. Connect internet to sync cloud.');
+    }
   };
 
-  // Reset to default
-  const handleResetProfile = () => {
+  // Reset to default on all devices
+  const handleResetProfile = async () => {
     setBrandProfile(DEFAULT_BRAND_PROFILE);
     localStorage.removeItem('aura_brand_profile');
-    triggerToast('Reset to default brand profile');
+    try {
+      await saveBrandProfileToCloud(DEFAULT_BRAND_PROFILE);
+      triggerToast('Reset to default on all devices');
+    } catch (err) {
+      triggerToast('Reset to default locally');
+    }
   };
 
   return (

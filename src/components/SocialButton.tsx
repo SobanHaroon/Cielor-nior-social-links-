@@ -5,6 +5,7 @@ import { SocialLinkItem } from '../types.ts';
 import {
   InstagramIcon,
   TikTokIcon,
+  FacebookIcon,
   WhatsAppIcon,
   GoogleReviewIcon,
   StarSolidIcon,
@@ -45,6 +46,8 @@ export const SocialButton: React.FC<SocialButtonProps> = ({
         return <InstagramIcon className="w-5 h-5 text-neutral-900 dark:text-neutral-100 transition-transform duration-200 group-hover:scale-110" />;
       case 'tiktok':
         return <TikTokIcon className="w-5 h-5 text-neutral-900 dark:text-neutral-100 transition-transform duration-200 group-hover:scale-110" />;
+      case 'facebook':
+        return <FacebookIcon className="w-5 h-5 text-neutral-900 dark:text-neutral-100 transition-transform duration-200 group-hover:scale-110" />;
       case 'website':
         return <Globe className="w-5 h-5 text-neutral-900 dark:text-neutral-100 transition-transform duration-200 group-hover:scale-110" />;
       case 'whatsapp':
