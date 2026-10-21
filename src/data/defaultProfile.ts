@@ -25,9 +25,9 @@ export const DEFAULT_BRAND_PROFILE: BrandProfile = {
     {
       id: 'website',
       title: 'Official Website',
-      handleOrInfo: 'aurastudio.design',
+      handleOrInfo: 'cielornior.vercel.app',
       subtitle: 'Flagship portfolio, project archives & monograph publication',
-      url: 'https://aurastudio.design',
+      url: 'https://cielornior.vercel.app/',
       actionLabel: 'Visit',
     },
     {

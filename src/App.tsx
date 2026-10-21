@@ -22,6 +22,8 @@ import { SocialButton } from './components/SocialButton.tsx';
 import { QRCodeModal } from './components/QRCodeModal.tsx';
 import { EditProfileModal } from './components/EditProfileModal.tsx';
 
+export const DEPLOYED_SITE_URL = 'https://cielornior.vercel.app/';
+
 export default function App() {
   // Theme state: defaults to dark for high-contrast minimalist look
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -34,7 +36,18 @@ export default function App() {
   const [brandProfile, setBrandProfile] = useState<BrandProfile>(() => {
     try {
       const saved = localStorage.getItem('aura_brand_profile');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed: BrandProfile = JSON.parse(saved);
+        // Ensure website link points to the deployed site if previously saved with old default
+        if (parsed.links) {
+          parsed.links = parsed.links.map((link) =>
+            link.id === 'website' && (link.url === 'https://aurastudio.design' || !link.url)
+              ? { ...link, url: DEPLOYED_SITE_URL, handleOrInfo: 'cielornior.vercel.app' }
+              : link
+          );
+        }
+        return parsed;
+      }
     } catch (e) {
       console.error('Failed to parse local brand profile', e);
     }
@@ -108,14 +121,13 @@ export default function App() {
     });
   };
 
-  // Share entire page QR or link
+  // Share main site QR or link (using deployed URL: https://cielornior.vercel.app/)
   const handleShareEntirePage = () => {
-    const currentUrl = window.location.href;
     setQrModalState({
       isOpen: true,
       title: brandProfile.name,
-      url: currentUrl,
-      subtitle: `Official Social Hub · ${brandProfile.name}`,
+      url: DEPLOYED_SITE_URL,
+      subtitle: `Official Hub · cielornior.vercel.app`,
     });
   };
 
@@ -279,8 +291,8 @@ export default function App() {
               <p className="font-medium text-neutral-900 dark:text-neutral-100 truncate">
                 Share this profile
               </p>
-              <p className="text-[11px] text-neutral-500 dark:text-neutral-400 truncate">
-                Instant QR code & link sharing for all visitors
+              <p className="text-[11px] text-neutral-500 dark:text-neutral-400 truncate font-mono">
+                cielornior.vercel.app
               </p>
             </div>
           </div>
@@ -288,7 +300,7 @@ export default function App() {
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
-              onClick={() => handleCopyLink(window.location.href, brandProfile.name)}
+              onClick={() => handleCopyLink(DEPLOYED_SITE_URL, brandProfile.name)}
               className="px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 font-medium text-neutral-800 dark:text-neutral-200 transition-colors"
             >
               Copy Link
